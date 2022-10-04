@@ -4,13 +4,42 @@ output: github_document
 ---
 ```{r}
 library(tidyverse)
+
+library(readxl)
+
+library(dplyr)
+
+library(janitor)
+
+library(tidyr)
 ```
 
 # Problem 2
 
 ```{r}
-fellowship_ring = 
-  readxl::read_excel("./data/Trash-Wheel-Collection-Totals-7-2020-2", range = "B3:D6") %>%
-  mutate(movie = "fellowship_ring")
+mr_trash_wheel = 
+  read_excel("data/Trash-Wheel-Collection-Totals-7-2020-2.xlsx", "Mr. Trash Wheel", range = "A2:N535") %>%
+  clean_names(dat = .) %>%
+  drop_na(data = ., dumpster) %>%
+  mutate(trash_wheel = 1)
+  
+  
+view(mr_trash_wheel)
 ```
 
+```{r}
+prof_trash_wheel = 
+  read_excel("data/Trash-Wheel-Collection-Totals-7-2020-2.xlsx", "Professor Trash Wheel", range = "A2:N117") %>%
+  clean_names(dat = .) %>%
+  drop_na(data = ., dumpster) %>%
+  mutate(trash_wheel = 2)
+
+view(prof_trash_wheel)
+```
+
+```{r}
+trash_wheel_tidy =
+  bind_rows(mr_trash_wheel, prof_trash_wheel)
+```
+
+```{r}
