@@ -1,0 +1,16 @@
+---
+title: "p8105_hw2_jdv2118"
+output: github_document
+---
+```{r}
+library(tidyverse)
+```
+
+# Problem 2
+
+```{r}
+fellowship_ring = 
+  readxl::read_excel("./data/Trash-Wheel-Collection-Totals-7-2020-2", range = "B3:D6") %>%
+  mutate(movie = "fellowship_ring")
+```
+
