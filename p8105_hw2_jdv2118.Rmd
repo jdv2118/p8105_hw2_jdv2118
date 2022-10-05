@@ -18,21 +18,31 @@ library(tidyr)
 
 ```{r}
 mr_trash_wheel = 
-  read_excel("data/Trash-Wheel-Collection-Totals-7-2020-2.xlsx", "Mr. Trash Wheel", range = "A2:N535") %>%
+  read_excel("data/Trash Wheel Collection Data.xlsx", "Mr. Trash Wheel", range = "A2:N550") %>%
   clean_names(dat = .) %>%
+  mutate(sports_balls = 
+  as.integer(
+  round(sports_balls)), 
+  trash_wheel = 1, 
+  year =
+  as.integer(year)) %>%
   drop_na(data = ., dumpster) %>%
-  mutate(trash_wheel = 1)
-  
-  
+  select(trash_wheel, everything())
+
+head(mr_trash_wheel)
+
 view(mr_trash_wheel)
 ```
 
 ```{r}
 prof_trash_wheel = 
-  read_excel("data/Trash-Wheel-Collection-Totals-7-2020-2.xlsx", "Professor Trash Wheel", range = "A2:N117") %>%
+  read_excel("data/Trash Wheel Collection Data.xlsx", "Professor Trash Wheel", range = "A2:M97") %>%
   clean_names(dat = .) %>%
+  mutate(trash_wheel = 2) %>%
   drop_na(data = ., dumpster) %>%
-  mutate(trash_wheel = 2)
+  select(trash_wheel, everything())
+
+head(prof_trash_wheel)
 
 view(prof_trash_wheel)
 ```
@@ -40,6 +50,51 @@ view(prof_trash_wheel)
 ```{r}
 trash_wheel_tidy =
   bind_rows(mr_trash_wheel, prof_trash_wheel)
+
+view(trash_wheel_tidy)
 ```
 
+# Problem 3 
+
 ```{r}
+national_politicians =
+  read_csv("data/pols-month.csv") %>%
+  clean_names(dat = .) %>%
+  separate(col = mon,   into = c("year",      "month", "day"), sep = "-") %>%
+  mutate(
+    month = recode(month, `01` = "January", `02` = "February", `03` = "March", `04` = "April", `05` = "May", `06` = "June", `07` = "July", `08` = "August", `09` = "September", `10` = "October", `11` = "November", `12` = "December")) %>% 
+  
+  mutate(
+    president = gop , dez   ) %>%
+  select(-prez_dem, -prez_gop, -day)
+
+#How do I create the president variable with the two options based on the other two variables?
+#How do I change month, day, and year to numeric?
+
+view(national_politicians)
+
+s_p = 
+  read_csv("data/snp.csv") %>%
+  clean_names(dat = .) %>%
+  separate(col = date,   into = c("month",      "day", "year"), sep = "/") %>%
+  arrange(year, month) %>%
+  select(year, month, everything())
+
+#How do I change month, day, and year to numeric?
+#How do I add the two digits of year to every value within the year column?
+
+view(s_p)
+
+unemployment =
+  read_csv("data/unemployment.csv") %>%
+  clean_names(dat = .) %>%
+  as.character(unemployment, "Jan", "Feb", "Mar", "Apr", "May", "Jun")
+  pivot_longer(
+    unemployment, 
+    Jan:Dec,
+    names_to = "month", 
+    values_to = "unemployment_percentage")
+
+#how do I change variables to character?
+
+view(unemployment)
