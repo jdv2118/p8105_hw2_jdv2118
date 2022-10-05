@@ -52,49 +52,74 @@ trash_wheel_tidy =
   bind_rows(mr_trash_wheel, prof_trash_wheel)
 
 view(trash_wheel_tidy)
+#Do we need to arrange the columns in a certain order?
 ```
 
 # Problem 3 
 
 ```{r}
-national_politicians =
+pols =
   read_csv("data/pols-month.csv") %>%
   clean_names(dat = .) %>%
-  separate(col = mon,   into = c("year",      "month", "day"), sep = "-") %>%
+  separate(col = mon,   into = c("year", "month", "day"), sep = "-") %>%
   mutate(
-    month = recode(month, `01` = "January", `02` = "February", `03` = "March", `04` = "April", `05` = "May", `06` = "June", `07` = "July", `08` = "August", `09` = "September", `10` = "October", `11` = "November", `12` = "December")) %>% 
-  
-  mutate(
-    president = gop , dez   ) %>%
-  select(-prez_dem, -prez_gop, -day)
+    year = as.numeric(year), 
+    month = as.numeric(month), 
+    day = as.numeric(day),
+    month = month.abb[as.numeric(month)],
+    president = 
+      if_else(prez_gop == 1, 'gop', 'dem')) %>% 
+    select(-prez_dem, -prez_gop, -day) %>%
+  arrange(year, month)
 
-#How do I create the president variable with the two options based on the other two variables?
 #How do I change month, day, and year to numeric?
+head(pols)
+view(pols)
 
-view(national_politicians)
-
-s_p = 
+snp = 
   read_csv("data/snp.csv") %>%
   clean_names(dat = .) %>%
-  separate(col = date,   into = c("month",      "day", "year"), sep = "/") %>%
+  separate(col = date,   into = c("month", "day", "year"), sep = "/") %>%
+  mutate(
+    year = as.numeric(year), 
+    month = as.numeric(month), 
+    day = as.numeric(day),
+    month = month.abb[as.numeric(month)]) %>% 
+    select(-day) %>%
   arrange(year, month) %>%
   select(year, month, everything())
 
-#How do I change month, day, and year to numeric?
+#How do I change month, day, and year to numeric (as numeric twice for month) and redundant code?
 #How do I add the two digits of year to every value within the year column?
-
-view(s_p)
+head(snp)
+view(snp)
 
 unemployment =
   read_csv("data/unemployment.csv") %>%
   clean_names(dat = .) %>%
-  as.character(unemployment, "Jan", "Feb", "Mar", "Apr", "May", "Jun")
   pivot_longer(
     unemployment, 
     Jan:Dec,
     names_to = "month", 
-    values_to = "unemployment_percentage")
+    values_to = "unemployment_percentage"
+    )
 
-#how do I change variables to character?
-
+#how do I fix the pivot_longer error?
+head(unemployment)
 view(unemployment)
+```
+
+```{r}
+pols_snp =
+  bind_rows(pols, snp)
+
+#Is this correct for merging snp into pols?
+
+pols_snp_unemployment = 
+  bind_rows(pols_snp, unemployment)
+
+#should we have kept the original names for the result dataframes?
+view(pols)
+```
+
+
